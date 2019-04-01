@@ -42,8 +42,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-uint8_t i;
-uint16_t tempbuf[5];
+extern volatile uint8_t j;
+volatile char tempbuf[100];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -222,11 +222,11 @@ void USART1_IRQHandler(void)
 	uint16_t incoming = huart1.Instance->RDR;
 
 	if(incoming == '$') {
-		i = 0;
+		j = 0;
 	}
-	if (i < 10) {
-		tempbuf[i] = incoming;
-		i++;
+	if (j < 100) {
+		tempbuf[j] = incoming;
+		j++;
 	}
 /*if (RECEIVED CASE) {
 	WHILE (RECEIVED BIT NOT END BIT) {

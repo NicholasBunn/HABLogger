@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "MyFunc.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,9 +51,13 @@ UART_HandleTypeDef huart1;
 volatile uint8_t TimeOn;
 char display[91];
 extern volatile uint8_t flag;
-volatile char GPSCo[10];
+volatile char GPSCo[120];
 volatile uint8_t j = 0;
-volatile char GPSTime[];
+volatile char GPSTime[100] = "0000000000000000000";
+volatile char GPSLat[100] = "0000000000000000000";
+volatile float GPSLatF;
+volatile char GPSLatS[100];
+extern volatile char tempbuf[];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,6 +85,7 @@ int main(void)
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
+
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -115,10 +121,24 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  if (flag == 1) {
-		  MyCheckSum(tempbuf[10]);
-		  MyPrintFunc(TimeOn, GPSCo[10]);
+
+		  MyPrintFunc(TimeOn, GPSTime, GPSLatF);
 		  flag = 0;
 	  }
+
+	  if(tempbuf[j-2] == '\r' && tempbuf[j-1] == '\n')
+	  {
+		  if(tempbuf[1] == 'G' && tempbuf[2] == 'P' && tempbuf[3] == 'G' && tempbuf[4] == 'G' && tempbuf[5] == 'A') {
+			  int y = j;
+			  for (int x = 0; x < y; x++) {
+				  GPSCo[x] = tempbuf[x];
+			  }
+			  int check = MyCheckSum(GPSCo);
+			  if (check) {
+				  MyGPSTime(GPSCo);
+			  }
+		  }
+	  	}
   }
   /* USER CODE END 3 */
 }

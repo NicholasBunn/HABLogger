@@ -17,9 +17,12 @@ extern volatile char tempbuf[];
 extern volatile char GPSCo[];
 extern volatile uint8_t j;
 extern volatile char GPSTime[];
+extern volatile char GPSLat[];
+extern volatile float GPSLatF;
+extern volatile char GPSLatS[];
 
-void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSCo[]);
-int MyCheckSum(volatile char tempbuf[]);
+void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile float GPSLatF);
+int MyCheckSum(volatile char GPSCo[]);
 char MyGPSTime(volatile char GPSCo[]);
 
 #endif /* MYFUNC1_H_ */
