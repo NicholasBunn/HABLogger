@@ -57,6 +57,10 @@ volatile char GPSTime[100] = "0000000000000000000";
 volatile char GPSLat[100] = "0000000000000000000";
 volatile float GPSLatF;
 volatile char GPSLatS[100];
+volatile char GPSLong[100] = "0000000000000000000";
+volatile float GPSLongF;
+volatile char GPSLats[100];
+volatile char GPSAlt[100];
 extern volatile char tempbuf[];
 /* USER CODE END PV */
 
@@ -122,7 +126,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  if (flag == 1) {
 
-		  MyPrintFunc(TimeOn, GPSTime, GPSLatF);
+		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAlt);
 		  flag = 0;
 	  }
 

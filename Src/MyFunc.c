@@ -8,10 +8,10 @@
 #include "MyFunc.h"
 #include <math.h>
 
-void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile float GPSLatF)
+void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile float GPSLatF, volatile float GPSLongF, volatile char GPSAlt[])
 {
 		TimeOn = HAL_GetTick()/1000;
-		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,  0,  0,  0,   0,   0,   0,%10.6f,          0,      0,  0,  0\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], GPSLatF);
+		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,  0,  0,  0,   0,   0,   0,%10.6f,%11.6f,%7s,  0,  0\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], GPSLatF, GPSLongF, &GPSAlt[0]);
 		HAL_UART_Transmit(&huart1, (uint8_t*)display, 91, 1000);
 }
 
@@ -103,7 +103,34 @@ char MyGPSTime(volatile char GPSCo[])
 			} else {
 				//Do nothing, it's positive
 			}
-			sprintf(GPSLatS, "%f", GPSLatF);
+			// CHECK THIS sprintf(GPSLatS, "%f", GPSLatF);
+		} else if(ComCnt == 4) {
+			GPSLong[x] = GPSCo[ci];
+			if (x == 0) {
+				GPSLongF = ((GPSLong[x] - 48)*100);
+			} else if (x == 1) {
+				GPSLongF = GPSLongF + ((GPSLong[x] - 48)*10);
+			} else if(x == 2) {
+				GPSLongF = GPSLongF + ((GPSLong[x] - 48));
+			} else if(x == 3) {
+				GPSLongF = GPSLongF + ( (float)(GPSLong[x] - 48)/6 );
+			} else if (x == 4) {
+				GPSLongF = GPSLongF + ( (float)(GPSLong[x] - 48)/60 );
+			} else if (x == 5) {
+				//Do nothing, it's a full stop
+			} else {
+				GPSLongF = GPSLongF + ( (float)(GPSLong[x] - 48)/(60*(pow(10, (x-4)))) );
+			}
+			x++;
+		} else if(ComCnt == 5 && (GPSCo[ci] == 'E' || GPSCo[ci] == 'N')) {
+			if(GPSCo[ci] == 'W') {
+				GPSLongF = GPSLongF*(-1);
+			} else {
+				//Do nothing, east is positive
+			}
+		} else if(ComCnt==9) {
+			GPSAlt[x] = GPSCo[ci];
+			x++;
 		}
 		ci++;
 	}
