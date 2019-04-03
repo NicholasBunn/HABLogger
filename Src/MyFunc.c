@@ -7,6 +7,8 @@
 
 #include "MyFunc.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile float GPSLatF, volatile float GPSLongF, volatile char GPSAlt[])
 {
@@ -130,6 +132,7 @@ void MyGPSTime(volatile char GPSCo[])
 			}
 		} else if(ComCnt == 9 && GPSCo[ci] != ',') {
 			GPSAlt[x] = GPSCo[ci];
+			GPSAltF = atof(GPSAlt);
 			x++;
 		} else {
 			//Do nothing

@@ -25,6 +25,8 @@
 /* USER CODE BEGIN Includes */
 #include "MyFunc.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,7 +63,10 @@ volatile char GPSLong[100] = "000000000000";
 volatile float GPSLongF;
 volatile char GPSLats[100];
 volatile char GPSAlt[100] = "0";
+volatile float GPSAltF;
 extern volatile char tempbuf[];
+int burnt = 0;
+int bi = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -89,7 +94,6 @@ int main(void)
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
-
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -143,6 +147,19 @@ int main(void)
 			  }
 		  }
 	  	}
+	  while(burnt != 1) {
+		  if( (GPSAltF > 10000) && ( (GPSLongF > 17.976343) || (GPSLongF < 18.9354) ) ) {
+			  bi++;
+		  } else {
+			  bi = 0;
+		  }
+		  if(bi >> 5) {
+			  burnt = 1;
+			  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
+
+			  }
+		  }
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -275,9 +292,21 @@ static void MX_USART1_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PA8 */
+  GPIO_InitStruct.Pin = GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }
 
