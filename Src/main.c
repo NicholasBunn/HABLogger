@@ -62,11 +62,13 @@ volatile char GPSLatS[100];
 volatile char GPSLong[100] = "000000000000";
 volatile float GPSLongF;
 volatile char GPSLats[100];
-volatile char GPSAlt[100] = "0";
+volatile char GPSAlt[100] = "0000";
 volatile float GPSAltF;
 extern volatile char tempbuf[];
 int burnt = 0;
 int bi = 0;
+int BurnStart = 0;
+int BurnCurrent = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -140,26 +142,32 @@ int main(void)
 			  int y = j;
 			  for (int x = 0; x < y; x++) {
 				  GPSCo[x] = tempbuf[x];
+				  tempbuf[x] = '0';
 			  }
 			  int check = MyCheckSum(GPSCo);
 			  if (check) {
 				  MyGPSTime(GPSCo);
 			  }
-		  }
-	  	}
-	  while(burnt != 1) {
-		  if( (GPSAltF > 10000) && ( (GPSLongF > 17.976343) || (GPSLongF < 18.9354) ) ) {
-			  bi++;
-		  } else {
-			  bi = 0;
-		  }
-		  if(bi >> 5) {
-			  burnt = 1;
-			  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
-
+			  if(burnt == 0)
+			  {
+				  if(GPSAltF > 10000 && (GPSLongF < 17.976343 || GPSLongF > 18.9354)) {
+					  bi++;
+				  } else {
+					  bi = 0;
+				  }
+				  if(bi >= 5) {
+					  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+					  BurnStart = HAL_GetTick();
+				  }
 			  }
 		  }
 	  }
+	BurnCurrent = HAL_GetTick();
+	if( (BurnCurrent > (BurnStart + 10000)) && (BurnStart != 0) ) {
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+		burnt = 1;
+		BurnStart = 0;
+	}
   }
   /* USER CODE END 3 */
 }
