@@ -53,14 +53,14 @@ char display[91];
 extern volatile uint8_t flag;
 volatile char GPSCo[120];
 volatile uint8_t j = 0;
-volatile char GPSTime[100] = "0000000000000000000";
-volatile char GPSLat[100] = "0000000000000000000";
+volatile char GPSTime[100] = "000000000000";
+volatile char GPSLat[100] = "000000000000";
 volatile float GPSLatF;
 volatile char GPSLatS[100];
-volatile char GPSLong[100] = "0000000000000000000";
+volatile char GPSLong[100] = "000000000000";
 volatile float GPSLongF;
 volatile char GPSLats[100];
-volatile char GPSAlt[100];
+volatile char GPSAlt[100] = "0";
 extern volatile char tempbuf[];
 /* USER CODE END PV */
 

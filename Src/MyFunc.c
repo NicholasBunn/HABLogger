@@ -67,7 +67,7 @@ int MyCheckSum(volatile char GPSCo[])
 	}
 }
 
-char MyGPSTime(volatile char GPSCo[])
+void MyGPSTime(volatile char GPSCo[])
 {
 	int ComCnt = 0;
 	int ci = 0;
@@ -78,10 +78,10 @@ char MyGPSTime(volatile char GPSCo[])
 			ci++;
 			x = 0;
 		}
-		if(ComCnt == 1) {
+		if(ComCnt == 1 && GPSCo[ci] != ',') {
 			GPSTime[x] = GPSCo[ci];
 			x++;
-		} else if(ComCnt == 2) {
+		} else if(ComCnt == 2 && GPSCo[ci] != ',') {
 			GPSLat[x] = GPSCo[ci];
 			if (x == 0) {
 				GPSLatF = ((GPSLat[x] - 48)*10);
@@ -97,14 +97,14 @@ char MyGPSTime(volatile char GPSCo[])
 				GPSLatF = GPSLatF + ( (float)(GPSLat[x] - 48)/(60*(pow(10, (x-4)))) );
 			}
 			x++;
-		} else if(ComCnt == 3 && (GPSCo[ci] == 'S' || GPSCo[ci] == 'N')) {
+		} else if(ComCnt == 3 && (GPSCo[ci] == 'S' || GPSCo[ci] == 'N') && GPSCo[ci] != ',') {
 			if(GPSCo[ci] == 'S') {
 				GPSLatF = GPSLatF*(-1);
 			} else {
 				//Do nothing, it's positive
 			}
 			// CHECK THIS sprintf(GPSLatS, "%f", GPSLatF);
-		} else if(ComCnt == 4) {
+		} else if(ComCnt == 4 && GPSCo[ci] != ',') {
 			GPSLong[x] = GPSCo[ci];
 			if (x == 0) {
 				GPSLongF = ((GPSLong[x] - 48)*100);
@@ -122,18 +122,23 @@ char MyGPSTime(volatile char GPSCo[])
 				GPSLongF = GPSLongF + ( (float)(GPSLong[x] - 48)/(60*(pow(10, (x-4)))) );
 			}
 			x++;
-		} else if(ComCnt == 5 && (GPSCo[ci] == 'E' || GPSCo[ci] == 'N')) {
+		} else if(ComCnt == 5 && (GPSCo[ci] == 'E' || GPSCo[ci] == 'W') && GPSCo[ci] != ',') {
 			if(GPSCo[ci] == 'W') {
 				GPSLongF = GPSLongF*(-1);
 			} else {
 				//Do nothing, east is positive
 			}
-		} else if(ComCnt==9) {
+		} else if(ComCnt == 9 && GPSCo[ci] != ',') {
 			GPSAlt[x] = GPSCo[ci];
 			x++;
+		} else {
+			//Do nothing
 		}
+		if(GPSCo[ci-1] == ',' && GPSCo[ci] == ',') {
+			//Do nothing
+		} else {
 		ci++;
+		}
 	}
-	return 0;
 }
 
