@@ -150,7 +150,7 @@ int main(void)
 			  }
 			  if(burnt == 0)
 			  {
-				  if(GPSAltF > 10000 && (GPSLongF < 17.976343 || GPSLongF > 18.9354)) {
+				  if((GPSAltF > 10000) && (GPSLongF < 17.976343 || GPSLongF > 18.9354) && (bi <= 5)) {
 					  bi++;
 				  } else {
 					  bi = 0;
