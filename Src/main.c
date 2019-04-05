@@ -132,7 +132,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  if (flag == 1) {
 
-		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAlt);
+		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF);
 		  flag = 0;
 	  }
 
