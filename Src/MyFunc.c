@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile float GPSLatF, volatile float GPSLongF, volatile char GPSAlt[])
+void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile char GPSAlt[])
 {
 		TimeOn = HAL_GetTick()/1000;
 		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,  0,  0,  0,   0,   0,   0,%10.6f,%11.6f,%7s,  0,  0\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], GPSLatF, GPSLongF, &GPSAlt[0]);
@@ -121,7 +121,7 @@ void MyGPSTime(volatile char GPSCo[])
 			} else if (x == 5) {
 				//Do nothing, it's a full stop
 			} else {
-				GPSLongF = GPSLongF + ( (float)(GPSLong[x] - 48)/(60*(pow(10, (x-4)))) );
+				GPSLongF = GPSLongF + ( (float)(GPSLong[x] - 48)/(60*(pow(10, (x-5)))) );
 			}
 			x++;
 		} else if(ComCnt == 5 && (GPSCo[ci] == 'E' || GPSCo[ci] == 'W') && GPSCo[ci] != ',') {

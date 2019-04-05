@@ -57,10 +57,10 @@ volatile char GPSCo[120];
 volatile uint8_t j = 0;
 volatile char GPSTime[100] = "000000000000";
 volatile char GPSLat[100] = "000000000000";
-volatile float GPSLatF;
+volatile double GPSLatF;
 volatile char GPSLatS[100];
 volatile char GPSLong[100] = "000000000000";
-volatile float GPSLongF;
+volatile double GPSLongF;
 volatile char GPSLats[100];
 volatile char GPSAlt[100] = "0000";
 volatile float GPSAltF;
@@ -148,9 +148,9 @@ int main(void)
 			  if (check) {
 				  MyGPSTime(GPSCo);
 			  }
-			  if(burnt == 0)
+			  if((burnt == 0) && (bi <= 5))
 			  {
-				  if((GPSAltF > 10000) && (GPSLongF < 17.976343 || GPSLongF > 18.9354) && (bi <= 5)) {
+				  if((GPSAltF > 10000) && (GPSLongF < 17.976343 || GPSLongF > 18.9354)) {
 					  bi++;
 				  } else {
 					  bi = 0;
