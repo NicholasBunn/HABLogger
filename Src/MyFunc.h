@@ -25,10 +25,14 @@ extern volatile double GPSLongF;
 extern volatile char GPSLats[];
 extern volatile char GPSAlt[];
 extern volatile float GPSAltF;
+extern volatile float VMeas;
+extern volatile float CMeas;
 
-void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF);
+void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile float CMeas, volatile float VMeas);
 int MyCheckSum(volatile char GPSCo[]);
 void MyGPSTime(volatile char GPSCo[]);
+void VProcess(volatile float VMeas);
+void CProcess(volatile float CMeas);
 
 #endif /* MYFUNC1_H_ */
 
