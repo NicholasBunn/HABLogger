@@ -10,10 +10,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile float CMeas, volatile float VMeas)
+void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint)
 {
 		TimeOn = HAL_GetTick()/1000;
-		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,  0,  0,  0,   0,   0,   0,%10.6f,%11.6f,%7.1f,%3f,%2.1f\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], GPSLatF, GPSLongF, GPSAltF, CMeas, VMeas);
+		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,  0,  0,  0,   0,   0,   0,%10.6f,%11.6f,%7.1f,%3.0lf,%3.1lf\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
 		HAL_UART_Transmit(&huart1, (uint8_t*)display, 91, 1000);
 }
 
@@ -145,10 +145,28 @@ void MyGPSTime(volatile char GPSCo[])
 	}
 }
 
-void VProcess(volatile float VMeas) {
-	//VPrint = VMeas/4096;
-}
+void CVProcess(volatile double VMeas, volatile double CMeas) {
+	//Process Voltage
+	VPro = VMeas/4096;
+	VPro = VPro*9.9;
+	CPro = CMeas/4096;
+	CPro = CPro*100;
+	if(PollCnt <= 19) {
+		VPrev = VPrev + VPro;
+		CPrev = CPrev + CPro;
+		TickTimePrev = TickTime;
+		PollCnt++;
+	} else {
+		VPrint = VPrev/20;
+		VPrev = 0;
+		CPrint = CPrev/20;
+		CPrev = 0;
+		TickTimePrev = TickTime;
+		PollCnt = 0;
+	}
+	//Process Current
 
-void CProcess(volatile float CMeas) {
+
+
 
 }

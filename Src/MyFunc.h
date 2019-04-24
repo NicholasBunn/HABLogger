@@ -25,14 +25,22 @@ extern volatile double GPSLongF;
 extern volatile char GPSLats[];
 extern volatile char GPSAlt[];
 extern volatile float GPSAltF;
-extern volatile float VMeas;
-extern volatile float CMeas;
+extern volatile double VMeas;
+extern volatile double CMeas;
+extern volatile double VPrint;
+extern volatile double CPrint;
+extern volatile double VPro;
+extern volatile double CPro;
+extern volatile int PollCnt;
+extern volatile int TickTime;
+extern volatile int TickTimePrev;
+extern volatile double VPrev;
+extern volatile double CPrev;
 
-void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile float CMeas, volatile float VMeas);
+void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint);
 int MyCheckSum(volatile char GPSCo[]);
 void MyGPSTime(volatile char GPSCo[]);
-void VProcess(volatile float VMeas);
-void CProcess(volatile float CMeas);
+void CVProcess(volatile double VMeas, volatile double CMeas);
 
 #endif /* MYFUNC1_H_ */
 

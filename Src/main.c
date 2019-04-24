@@ -71,11 +71,17 @@ int burnt = 0;
 int bi = 0;
 int BurnStart = 0;
 int BurnCurrent = 0;
-volatile float VMeas;
-volatile float CMeas;
-int PollCnt = 0;
-int TickTime = 0;
-int TickTimePrev = 0;
+volatile double VMeas = 0;
+volatile double CMeas = 0;
+volatile int PollCnt = 0;
+volatile int TickTime = 0;
+volatile int TickTimePrev = 0;
+volatile double VPrint = 0;
+volatile double CPrint = 0;
+volatile double VPro = 0;
+volatile double CPro = 0;
+volatile double VPrev = 0;
+volatile double CPrev = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,20 +148,18 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  if (flag == 1) {
 
-		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CMeas, VMeas);
+		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
 		  flag = 0;
 	  }
 
 	  TickTime = HAL_GetTick();
-	  if( (PollCnt <= 20) && (TickTime >= TickTimePrev +  20)) {
+	  if(TickTime >= TickTimePrev +  20) {
 		  HAL_ADC_PollForConversion (&hadc1, 1000);
-	  	  VMeas = HAL_ADC_GetValue (&hadc1);
-	  	  HAL_ADC_PollForConversion (&hadc1, 1000);
-	  	  CMeas = HAL_ADC_GetValue (&hadc1);
-	  	  VProcess(VMeas);
-	  	  CProcess(CMeas);
-	  	  TickTimePrev = TickTime;
-	  	  PollCnt++;
+		  VMeas = HAL_ADC_GetValue (&hadc1);
+		  HAL_ADC_PollForConversion (&hadc1, 1000);
+		  CMeas = HAL_ADC_GetValue (&hadc1);
+		  CVProcess(VMeas, CMeas);
+		  TickTimePrev = TickTime;
 	  }
 
 	  if(tempbuf[j-2] == '\r' && tempbuf[j-1] == '\n')
