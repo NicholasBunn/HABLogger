@@ -82,6 +82,12 @@ volatile double VPro = 0;
 volatile double CPro = 0;
 volatile double VPrev = 0;
 volatile double CPrev = 0;
+volatile int RS;
+volatile int RW;
+volatile int DB7;
+volatile int DB6;
+volatile int DB5;
+volatile int DB4;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,7 +121,39 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  LCD_Init();
+  	  	  /*
+  	  	  LCD_Write(1,0,0,1,0,1);
+    	  LCD_Write(1,0,0,0,1,1);
 
+    	  LCD_Write(1,0,0,1,0,0);
+    	  LCD_Write(1,0,0,1,0,1);
+
+    	  LCD_Write(1,0,0,1,0,0);
+    	  LCD_Write(1,0,1,1,1,0);
+
+    	  LCD_Write(1,0,0,1,0,0);
+    	  LCD_Write(1,0,0,1,0,0);
+
+
+    	  LCD_Write(0,0,1,1,0,0);
+    	  LCD_Write(0,0,0,0,0,0);
+
+    	  LCD_Write(1,0,0,1,0,0);
+    	  LCD_Write(1,0,1,1,1,0);
+
+    	  LCD_Write(1,0,0,1,0,1);
+    	  LCD_Write(1,0,0,1,0,1);
+
+    	  LCD_Write(1,0,0,1,0,0);
+    	  LCD_Write(1,0,0,1,0,0);
+
+    	  LCD_Write(1,0,0,1,0,0);
+    	  LCD_Write(1,0,0,1,0,1);
+
+    	  LCD_Write(1,0,0,1,0,1);
+    	  LCD_Write(1,0,0,0,1,1);
+    	  */
   /* USER CODE END Init */
 
   /* Configure the system clock */

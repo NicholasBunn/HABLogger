@@ -148,7 +148,7 @@ void MyGPSTime(volatile char GPSCo[])
 void CVProcess(volatile double VMeas, volatile double CMeas) {
 	//Process Voltage
 	VPro = VMeas/4096;
-	VPro = VPro*9.9;
+	VPro = VPro*12.6;
 	CPro = CMeas/4096;
 	CPro = CPro*100;
 	if(PollCnt <= 19) {
@@ -164,9 +164,73 @@ void CVProcess(volatile double VMeas, volatile double CMeas) {
 		TickTimePrev = TickTime;
 		PollCnt = 0;
 	}
-	//Process Current
-
-
-
-
 }
+
+void LCD_Write(volatile int RS, volatile int RW, volatile int DB7, volatile int DB6, volatile int DB5, volatile int DB4) {
+	GPIOB -> ODR |= GPIO_PIN_2;
+	if(RS == 1) {
+		GPIOB -> ODR |= GPIO_PIN_15;
+	} else {
+		GPIOB -> ODR &= ~GPIO_PIN_15;
+	}
+
+	if(RW == 1) {
+		GPIOB -> ODR |= GPIO_PIN_1;
+	} else {
+		GPIOB -> ODR &= ~GPIO_PIN_1;
+	}
+
+	if(DB7 == 1) {
+		GPIOA -> ODR |= GPIO_PIN_12;
+	} else {
+		GPIOA -> ODR &= ~GPIO_PIN_12;
+	}
+
+	if(DB6 == 1) {
+		GPIOA -> ODR |= GPIO_PIN_11;
+	} else {
+		GPIOA -> ODR &= ~GPIO_PIN_11;
+	}
+
+	if(DB5 == 1) {
+		GPIOB -> ODR |= GPIO_PIN_12;
+	} else {
+		GPIOB -> ODR &= ~GPIO_PIN_12;
+	}
+
+	if(DB4 == 1) {
+		GPIOB -> ODR |= GPIO_PIN_11;
+	} else {
+		GPIOB -> ODR &= ~GPIO_PIN_11;
+	}
+	HAL_Delay(2);
+	GPIOB -> ODR &= ~GPIO_PIN_2;
+}
+
+void LCD_Init() {
+	GPIOB -> ODR |= GPIO_PIN_2;
+
+	HAL_Delay(20);
+	LCD_Write(0,0,0,0,1,1);
+
+	HAL_Delay(5);
+	LCD_Write(0,0,0,0,1,1);
+
+	HAL_Delay(1);
+	LCD_Write(0,0,0,0,1,1);
+
+	LCD_Write(0,0,0,0,1,0);
+
+	LCD_Write(0,0,0,0,1,0);
+	LCD_Write(0,0,1,1,0,0);
+
+	LCD_Write(0,0,0,0,0,0);
+	LCD_Write(0,0,1,1,1,1);
+
+	LCD_Write(0,0,0,0,0,0);
+	LCD_Write(0,0,0,0,0,1);
+
+	LCD_Write(0,0,0,0,0,0);
+	LCD_Write(0,0,0,1,1,0);
+}
+
