@@ -64,7 +64,7 @@ volatile char GPSLatS[100];
 volatile char GPSLong[100] = "000000000000";
 volatile double GPSLongF;
 volatile char GPSLats[100];
-volatile char GPSAlt[100] = "0000";
+volatile char GPSAlt[8] = "0";
 volatile float GPSAltF;
 extern volatile char tempbuf[];
 int burnt = 0;
@@ -89,7 +89,7 @@ volatile int DB6;
 volatile int DB5;
 volatile int DB4;
 volatile int Burn = 0;
-volatile int GPSAltI[];
+volatile uint8_t GPSAltI = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -176,23 +176,21 @@ int main(void)
 
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
   HAL_ADC_Start (&hadc1);
+  LCD_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  LCD_Init();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	  if (flag == 1) {
 
 		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
-		  for(int i=0;i<5;i++) {
-			  GPSAltI[i] = GPSAlt[i];
-		  }
-		  LCD_Conv(GPSAltI, Burn);
+		  LCD_Conv(Burn);
 		  flag = 0;
 	  }
 
