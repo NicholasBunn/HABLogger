@@ -234,3 +234,72 @@ void LCD_Init() {
 	LCD_Write(0,0,0,1,1,0);
 }
 
+void LCD_Conv(char d, int Burn) {
+	for(int i=0;i<7;i++) {
+		int a6 = (i >> 6) & 0b00000001;
+		int a5 = (i >> 5) & 0b00000001;
+		int a4 = (i >> 4) & 0b00000001;
+		int a3 = (i >> 3) & 0b00000001;
+		int a2 = (i >> 2) & 0b00000001;
+		int a1 = (i >> 1) & 0b00000001;
+		int a0 = (i >> 0) & 0b00000001;
+
+		LCD_Write(0,0,1,a6,a5,a4);
+		LCD_Write(0,0,a3,a2,a1,a0);
+
+		int d7 = (d >> 7) & 0b00000001;
+		int d6 = (d >> 6) & 0b00000001;
+		int d5 = (d >> 5) & 0b00000001;
+		int d4 = (d >> 4) & 0b00000001;
+		int d3 = (d >> 3) & 0b00000001;
+		int d2 = (d >> 2) & 0b00000001;
+		int d1 = (d >> 1) & 0b00000001;
+		int d0 = (d  >> 0) & 0b00000001;
+
+		LCD_Write(1,0,d7,d6,d5,d4);
+		LCD_Write(1,0,d3,d2,d1,d0);
+	}
+
+	if(Burn == 1) {
+		LCD_Write(0,0,1,1,0,0);
+		LCD_Write(0,0,0,0,0,1);
+
+		LCD_Write(1,0,0,1,0,0);
+		LCD_Write(1,0,0,0,1,0);
+	} else {
+		LCD_Write(0,0,1,1,0,0);
+		LCD_Write(0,0,0,0,0,1);
+
+		LCD_Write(1,0,1,0,0,0);
+		LCD_Write(1,0,0,0,0,0);
+	}
+//Temp
+	LCD_Write(0,0,1,1,0,0);
+	LCD_Write(0,0,0,1,0,0);
+
+	LCD_Write(1,0,0,1,0,1);
+	LCD_Write(1,0,0,1,0,0);
+
+	LCD_Write(0,0,1,1,0,0);
+	LCD_Write(0,0,0,1,0,1);
+
+	LCD_Write(1,0,0,1,0,1);
+	LCD_Write(1,0,0,1,0,0);
+
+	LCD_Write(0,0,1,1,0,0);
+	LCD_Write(0,0,0,1,1,0);
+
+	LCD_Write(1,0,0,1,0,1);
+	LCD_Write(1,0,0,1,0,0);
+
+	LCD_Write(0,0,1,1,0,0);
+	LCD_Write(0,0,0,1,1,1);
+
+	LCD_Write(1,0,0,1,0,0);
+	LCD_Write(1,0,0,0,1,1);
+}
+
+void LCD_Print(volatile char GPSAlt[], volatile int Burn) {
+	LCD_Write(1,0,GPSAlt[0],GPSAlt[1],GPSAlt[2],GPSAlt[3]);
+	LCD_Write(1,0,GPSAlt[4],GPSAlt[5],GPSAlt[6],GPSAlt[7]);
+}

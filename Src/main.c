@@ -88,6 +88,7 @@ volatile int DB7;
 volatile int DB6;
 volatile int DB5;
 volatile int DB4;
+volatile int Burn = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -121,7 +122,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  LCD_Init();
   	  	  /*
   	  	  LCD_Write(1,0,0,1,0,1);
     	  LCD_Write(1,0,0,0,1,1);
@@ -181,12 +181,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  LCD_Init();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	  if (flag == 1) {
 
 		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
+		  LCD_Conv(GPSAlt[0], Burn);
 		  flag = 0;
 	  }
 
@@ -222,6 +224,7 @@ int main(void)
 				  if(bi >= 5) {
 					  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 					  BurnStart = HAL_GetTick();
+					  Burn = 1;
 				  }
 			  }
 		  }
@@ -230,6 +233,7 @@ int main(void)
 	if( (BurnCurrent > (BurnStart + 10000)) && (BurnStart != 0) ) {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
 		burnt = 1;
+		Burn = 0;
 		BurnStart = 0;
 	}
   }

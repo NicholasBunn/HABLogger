@@ -42,6 +42,7 @@ extern volatile int DB7;
 extern volatile int DB6;
 extern volatile int DB5;
 extern volatile int DB4;
+extern volatile int Burn;
 
 void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint);
 int MyCheckSum(volatile char GPSCo[]);
@@ -50,6 +51,8 @@ void CVProcess(volatile double VMeas, volatile double CMeas);
 void LCD_Write(volatile int RS, volatile int RW, volatile int DB7, volatile int DB6, volatile int DB5, volatile int DB4);
 void LCD_Init();
 void Pin_Lift();
+void LCD_Print(volatile char GPSAlt[], volatile int Burn);
+void LCD_Conv(char d, int Burn);
 
 #endif /* MYFUNC1_H_ */
 
