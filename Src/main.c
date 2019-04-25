@@ -89,6 +89,7 @@ volatile int DB6;
 volatile int DB5;
 volatile int DB4;
 volatile int Burn = 0;
+volatile int GPSAltI[];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -188,7 +189,10 @@ int main(void)
 	  if (flag == 1) {
 
 		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
-		  LCD_Conv(GPSAlt[0], Burn);
+		  for(int i=0;i<5;i++) {
+			  GPSAltI[i] = GPSAlt[i];
+		  }
+		  LCD_Conv(GPSAltI, Burn);
 		  flag = 0;
 	  }
 
