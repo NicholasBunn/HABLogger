@@ -148,9 +148,9 @@ void MyGPSTime(volatile char GPSCo[])
 void CVProcess(volatile double VMeas, volatile double CMeas) {
 	//Process Voltage
 	VPro = VMeas/4096;
-	VPro = VPro*12;
+	VPro = VPro*12.1;
 	CPro = CMeas/4096;
-	CPro = CPro*94.7;
+	CPro = CPro*95.8;
 	if(PollCnt <= 19) {
 		VPrev = VPrev + VPro;
 		CPrev = CPrev + CPro;
@@ -168,37 +168,37 @@ void CVProcess(volatile double VMeas, volatile double CMeas) {
 
 void LCD_Write(volatile int RS, volatile int RW, volatile int DB7, volatile int DB6, volatile int DB5, volatile int DB4) {
 	GPIOB -> ODR |= GPIO_PIN_2;
-	if(RS == 1) {
+	if(RS) {
 		GPIOB -> ODR |= GPIO_PIN_15;
 	} else {
 		GPIOB -> ODR &= ~GPIO_PIN_15;
 	}
 
-	if(RW == 1) {
+	if(RW) {
 		GPIOB -> ODR |= GPIO_PIN_1;
 	} else {
 		GPIOB -> ODR &= ~GPIO_PIN_1;
 	}
 
-	if(DB7 == 1) {
+	if(DB7) {
 		GPIOA -> ODR |= GPIO_PIN_12;
 	} else {
 		GPIOA -> ODR &= ~GPIO_PIN_12;
 	}
 
-	if(DB6 == 1) {
+	if(DB6) {
 		GPIOA -> ODR |= GPIO_PIN_11;
 	} else {
 		GPIOA -> ODR &= ~GPIO_PIN_11;
 	}
 
-	if(DB5 == 1) {
+	if(DB5) {
 		GPIOB -> ODR |= GPIO_PIN_12;
 	} else {
 		GPIOB -> ODR &= ~GPIO_PIN_12;
 	}
 
-	if(DB4 == 1) {
+	if(DB4) {
 		GPIOB -> ODR |= GPIO_PIN_11;
 	} else {
 		GPIOB -> ODR &= ~GPIO_PIN_11;
@@ -225,7 +225,7 @@ void LCD_Init() {
 	LCD_Write(0,0,1,1,0,0);
 
 	LCD_Write(0,0,0,0,0,0);
-	LCD_Write(0,0,1,1,1,1);
+	LCD_Write(0,0,1,1,0,0);
 
 	LCD_Write(0,0,0,0,0,0);
 	LCD_Write(0,0,0,0,0,1);
@@ -240,14 +240,31 @@ void LCD_Conv(int Burn) {
 	//Clear display
 	LCD_Write(0,0,0,0,0,0);
 	LCD_Write(0,0,0,0,0,1);
-
+	GPSAltI = 0;
+	uint8_t a0;
+	uint8_t a1;
+	uint8_t a2;
+	uint8_t a3;
+	uint8_t a4;
+	uint8_t a5;
+	uint8_t a6;
+	uint8_t a7;
 	for(int i=0;i<7;i++) {
-		GPSAltI = GPSAlt[i];
+		GPSAltI = (int)GPSAlt[i];
 		if(GPSAltI < 48) {
 			i = 7;
 		} else {
-			LCD_Write(1,0,GPSAltI&0b10000000,GPSAltI&0b01000000,GPSAltI&0b00100000,GPSAltI&0b00010000);
-			LCD_Write(1,0,GPSAltI&0b00001000,GPSAltI&0b00000100,GPSAltI&0b00000010,GPSAltI&0b00000001);
+			a0 = GPSAltI&0b10000000;
+			a1 = GPSAltI&0b01000000;
+			a2 = GPSAltI&0b00100000;
+			a3 = GPSAltI&0b00010000;
+			a4 = GPSAltI&0b00001000;
+			a5 = GPSAltI&0b00000100;
+			a6 = GPSAltI&0b00000010;
+			a7 = GPSAltI&0b00000001;
+
+			LCD_Write(1,0,a0,a1,a2,a3);
+			LCD_Write(1,0,a4,a5,a6,a7);
 		}
 	}
 	LCD_Write(1,0,0,1,1,0);
@@ -294,4 +311,5 @@ void LCD_Conv(int Burn) {
 //Reset Cursor
 	LCD_Write(0,0,0,0,0,0);
 	LCD_Write(0,0,0,0,1,0);
+
 }
