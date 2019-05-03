@@ -48,6 +48,7 @@ extern volatile int Burn;
 extern volatile uint8_t GPSAltI;
 extern struct bme280_dev dev;
 extern volatile int8_t rslt = BME280_OK;
+extern volatile struct bme280_data comp_data;
 
 void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint);
 int MyCheckSum(volatile char GPSCo[]);
@@ -59,7 +60,9 @@ void LCD_Conv(int Burn);
 void user_delay_ms(uint32_t period);
 int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len);
 int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len);
-void I2CInit();
+void Struct_Init();
+int8_t My_BME_Config(struct bme280_dev *dev);
+void BME_Data(struct bme280_dev *dev);
 
 #endif /* MYFUNC1_H_ */
 

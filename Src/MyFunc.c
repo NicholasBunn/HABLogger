@@ -6,6 +6,7 @@
  */
 
 #include "MyFunc.h"
+#include "main.c"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -321,6 +322,7 @@ void user_delay_ms(uint32_t period)
      * Return control or wait,
      * for a period amount of milliseconds
      */
+	HAL_Delay(period);
 }
 
 int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
@@ -330,7 +332,8 @@ int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16
     /*
      * The parameter dev_id can be used as a variable to store the I2C address of the device
      */
-
+    HAL_I2C_Master_Transmit(&hi2c1,dev_id,&reg_addr,len,5);
+    HAL_I2C_Master_Receive(&hi2c1,dev_id,reg_data,len,5);
     /*
      * Data on the bus should be like
      * |------------+---------------------|
@@ -357,7 +360,8 @@ int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint1
     /*
      * The parameter dev_id can be used as a variable to store the I2C address of the device
      */
-
+    HAL_I2C_Master_Transmit(&hi2c1,dev_id,&reg_addr,len,5);
+    HAL_I2C_Master_Transmit(&hi2c1,dev_id,reg_data,len,5);
     /*
      * Data on the bus should be like
      * |------------+---------------------|
@@ -375,7 +379,7 @@ int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint1
     return rslt;
 }
 
-void I2CInit() {
+void Struct_Init() {
 	struct bme280_dev dev;
 	int8_t rslt = BME280_OK;
 
@@ -386,4 +390,29 @@ void I2CInit() {
 	dev.delay_ms = user_delay_ms;
 
 	rslt = bme280_init(&dev);
+}
+
+int8_t My_BME_Config(struct bme280_dev *dev) {
+	int8_t rslt;
+	uint8_t settings_sel;
+
+	dev->settings.osr_h = BME280_OVERSAMPLING_1X;
+	dev->settings.osr_p = BME280_OVERSAMPLING_16X;
+	dev->settings.osr_t = BME280_OVERSAMPLING_2X;
+	dev->settings.filter = BME280_FILTER_COEFF_16;
+	dev->settings.standby_time = BME280_STANDBY_TIME_62_5_MS;
+
+	settings_sel = BME280_OSR_PRESS_SEL;
+	settings_sel |= BME280_OSR_TEMP_SEL;
+	settings_sel |= BME280_OSR_HUM_SEL;
+	settings_sel |= BME280_STANDBY_SEL;
+	settings_sel |= BME280_FILTER_SEL;
+	rslt = bme280_set_sensor_settings(settings_sel, dev);
+	rslt = bme280_set_sensor_mode(BME280_NORMAL_MODE, dev);
+
+	return rslt;
+}
+
+void Get_BME_Data(struct bme280_dev *dev) {
+	bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
 }
