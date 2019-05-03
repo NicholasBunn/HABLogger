@@ -8,6 +8,8 @@
 #ifndef MYFUNC_H_
 #define MYFUNC_H_
 #include "stm32f3xx_hal.h"
+#include "bme280.h"
+
 
 extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart1;
@@ -44,6 +46,8 @@ extern volatile int DB5;
 extern volatile int DB4;
 extern volatile int Burn;
 extern volatile uint8_t GPSAltI;
+extern struct bme280_dev dev;
+extern volatile int8_t rslt = BME280_OK;
 
 void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint);
 int MyCheckSum(volatile char GPSCo[]);
@@ -52,6 +56,10 @@ void CVProcess(volatile double VMeas, volatile double CMeas);
 void LCD_Write(volatile int RS, volatile int RW, volatile int DB7, volatile int DB6, volatile int DB5, volatile int DB4);
 void LCD_Init();
 void LCD_Conv(int Burn);
+void user_delay_ms(uint32_t period);
+int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len);
+int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len);
+void I2CInit();
 
 #endif /* MYFUNC1_H_ */
 

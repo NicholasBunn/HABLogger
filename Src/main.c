@@ -27,6 +27,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "bme280.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,6 +91,7 @@ volatile int DB5;
 volatile int DB4;
 volatile int Burn = 0;
 volatile uint8_t GPSAltI = 0;
+struct bme280_dev dev;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
