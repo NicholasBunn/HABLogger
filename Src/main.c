@@ -24,10 +24,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "MyFunc.h"
+#include "bme280.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "bme280.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,7 +94,8 @@ volatile int DB4;
 volatile int Burn = 0;
 volatile uint8_t GPSAltI = 0;
 struct bme280_dev dev;
-volatile struct bme280_data comp_data;
+struct bme280_data comp_data;
+volatile int8_t rslt = BME280_OK;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -186,7 +187,7 @@ int main(void)
   HAL_ADC_Start (&hadc1);
   LCD_Init();
   Struct_Init();
-  My_BME_Config(&dev);
+  My_BME_Config();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -202,7 +203,7 @@ int main(void)
 		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
 		  LCD_Conv(Burn);
 		  flag = 0;
-		  Get_BME_Data(&dev);
+		  Get_BME_Data();
 	  }
 
 	  TickTime = HAL_GetTick();
