@@ -15,10 +15,10 @@
 #include <stdlib.h>
 I2C_HandleTypeDef hi2c1;
 
-void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint)
+void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint, volatile int8_t BME_T, volatile double BME_P, volatile double BME_H)
 {
 		TimeOn = HAL_GetTick()/1000;
-		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,  0,  0,  0,   0,   0,   0,%10.6f,%11.6f,%7.1f,%3.0lf,%3.1lf\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
+		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,%3d,%3.0f,%3.0f,   0,   0,   0,%10.6f,%11.6f,%7.1f,%3.0lf,%3.1lf\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], BME_T, BME_H,BME_P, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
 		HAL_UART_Transmit(&huart1, (uint8_t*)display, 91, 1000);
 }
 
@@ -422,4 +422,8 @@ int8_t My_BME_Config() {
 
 void Get_BME_Data() {
 	bme280_get_sensor_data(BME280_ALL, &comp_data, &dev);
+	BME_H = (comp_data.humidity)/1024;
+	BME_P = (comp_data.pressure)/100000;
+	BME_T = (comp_data.temperature)/100;
+	sprintf(BME_T_s, "%d", BME_T);
 }

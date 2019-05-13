@@ -96,6 +96,10 @@ volatile uint8_t GPSAltI = 0;
 struct bme280_dev dev;
 struct bme280_data comp_data;
 volatile int8_t rslt = BME280_OK;
+volatile int8_t BME_T = 0;
+volatile double BME_P = 0;
+volatile double BME_H = 0;
+char BME_T_s[3];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -200,10 +204,11 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  if (flag == 1) {
 
-		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
+		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint, BME_T, BME_P, BME_H);
+		  Get_BME_Data();
 		  LCD_Conv(Burn);
 		  flag = 0;
-		  Get_BME_Data();
+
 	  }
 
 	  TickTime = HAL_GetTick();

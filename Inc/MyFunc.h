@@ -48,8 +48,12 @@ extern volatile uint8_t GPSAltI;
 extern struct bme280_dev dev;
 extern volatile int8_t rslt;
 extern struct bme280_data comp_data;
+extern volatile int8_t BME_T;
+extern volatile double BME_P;
+extern volatile double BME_H;
+extern char BME_T_s[3];
 
-void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint);
+void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint, volatile int8_t BME_T, volatile double BME_P, volatile double BME_H);
 int MyCheckSum(volatile char GPSCo[]);
 void MyGPSTime(volatile char GPSCo[]);
 void CVProcess(volatile double VMeas, volatile double CMeas);
