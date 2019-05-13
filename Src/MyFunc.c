@@ -254,6 +254,14 @@ void LCD_Conv(int Burn) {
 	uint8_t a5;
 	uint8_t a6;
 	uint8_t a7;
+	uint8_t b0;
+	uint8_t b1;
+	uint8_t b2;
+	uint8_t b3;
+	uint8_t b4;
+	uint8_t b5;
+	uint8_t b6;
+	uint8_t b7;
 	for(int i=0;i<7;i++) {
 		GPSAltI = (int)GPSAlt[i];
 		if(GPSAltI < 48) {
@@ -274,6 +282,7 @@ void LCD_Conv(int Burn) {
 	}
 	LCD_Write(1,0,0,1,1,0);
 	LCD_Write(1,0,1,1,0,1);
+
 
 //Burn
 	if(Burn == 1) {
@@ -299,20 +308,21 @@ void LCD_Conv(int Burn) {
 	LCD_Write(0,0,1,1,0,0);
 	LCD_Write(0,0,0,1,0,1);
 
-	LCD_Write(1,0,0,0,1,1);
-	LCD_Write(1,0,0,0,1,0);
+	for(int i=0;i<7;i++) {
+			BME_T_I = (int)BME_T_s[i];
 
-	LCD_Write(0,0,1,1,0,0);
-	LCD_Write(0,0,0,1,1,0);
+			b0 = BME_T_I&0b10000000;
+			b1 = BME_T_I&0b01000000;
+			b2 = BME_T_I&0b00100000;
+			b3 = BME_T_I&0b00010000;
+			b4 = BME_T_I&0b00001000;
+			b5 = BME_T_I&0b00000100;
+			b6 = BME_T_I&0b00000010;
+			b7 = BME_T_I&0b00000001;
 
-	LCD_Write(1,0,0,0,1,1);
-	LCD_Write(1,0,0,1,0,1);
-
-	LCD_Write(0,0,1,1,0,0);
-	LCD_Write(0,0,0,1,1,1);
-
-	LCD_Write(1,0,0,1,0,0);
-	LCD_Write(1,0,0,0,1,1);
+			LCD_Write(1,0,b0,b1,b2,b3);
+			LCD_Write(1,0,b4,b5,b6,b7);
+		}
 //Reset Cursor
 	LCD_Write(0,0,0,0,0,0);
 	LCD_Write(0,0,0,0,1,0);
@@ -425,5 +435,5 @@ void Get_BME_Data() {
 	BME_H = (comp_data.humidity)/1024;
 	BME_P = (comp_data.pressure)/100000;
 	BME_T = (comp_data.temperature)/100;
-	sprintf(BME_T_s, "%d", BME_T);
+	sprintf(BME_T_s, "%dC", BME_T);
 }

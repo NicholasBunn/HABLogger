@@ -100,6 +100,7 @@ volatile int8_t BME_T = 0;
 volatile double BME_P = 0;
 volatile double BME_H = 0;
 char BME_T_s[3];
+volatile int8_t BME_T_I = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
