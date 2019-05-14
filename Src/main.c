@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "MyFunc.h"
 #include "bme280.h"
+#include "lis2dh12_reg.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -101,6 +102,13 @@ volatile double BME_P = 0;
 volatile double BME_H = 0;
 char BME_T_s[3];
 volatile int8_t BME_T_I = 0;
+axis3bit16_t data_raw_acceleration;
+axis1bit16_t data_raw_temperature;
+float acceleration_mg[3];
+float temperature_degC;
+uint8_t whoamI;
+uint8_t tx_buffer[1000];
+lis2dh12_ctx_t dev_ctx;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -193,6 +201,7 @@ int main(void)
   LCD_Init();
   Struct_Init();
   My_BME_Config();
+  Accel_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -208,6 +217,7 @@ int main(void)
 		  MyPrintFunc(TimeOn, GPSTime, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint, BME_T, BME_P, BME_H);
 		  Get_BME_Data();
 		  LCD_Conv(Burn);
+		  Accel_Process();
 		  flag = 0;
 
 	  }

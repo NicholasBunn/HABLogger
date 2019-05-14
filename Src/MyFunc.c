@@ -9,6 +9,7 @@
 #include "main.h"
 #include "bme280.h"
 #include "bme280_defs.h"
+#include "lis2dh12_reg.h"
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
@@ -18,7 +19,7 @@ I2C_HandleTypeDef hi2c1;
 void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint, volatile int8_t BME_T, volatile double BME_P, volatile double BME_H)
 {
 		TimeOn = HAL_GetTick()/1000;
-		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,%3d,%3.0f,%3.0f,   0,   0,   0,%10.6f,%11.6f,%7.1f,%3.0lf,%3.1lf\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], BME_T, BME_H,BME_P, GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
+		sprintf(display, "$20336020,%5d,%2.2s:%2.2s:%2.2s,%3d,%3.0f,%3.0f,%4.0f,%4.0f,%4.0f,%10.6f,%11.6f,%7.1f,%3.0lf,%3.1lf\n", (uint8_t)TimeOn, &GPSTime[0], &GPSTime[2], &GPSTime[4], BME_T, BME_H,BME_P, acceleration_mg[2], acceleration_mg[1], acceleration_mg[0], GPSLatF, GPSLongF, GPSAltF, CPrint, VPrint);
 		HAL_UART_Transmit(&huart1, (uint8_t*)display, 91, 1000);
 }
 
@@ -437,3 +438,143 @@ void Get_BME_Data() {
 	BME_T = (comp_data.temperature)/100;
 	sprintf(BME_T_s, "%dC", BME_T);
 }
+
+static int32_t platform_write(void *handle, uint8_t reg, uint8_t *bufp,
+                              uint16_t len)
+{
+  if (handle == &hi2c1)
+  {
+    /* Write multiple command */
+    reg |= 0x80;
+    HAL_I2C_Mem_Write(handle, LIS2DH12_I2C_ADD_L, reg,
+                      I2C_MEMADD_SIZE_8BIT, bufp, len, 1000);
+  }
+#ifdef STEVAL_MKI109V3
+  else if (handle == &hspi2)
+  {
+    /* Write multiple command */
+    reg |= 0x40;
+    HAL_GPIO_WritePin(CS_up_GPIO_Port, CS_up_Pin, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(handle, &reg, 1, 1000);
+    HAL_SPI_Transmit(handle, bufp, len, 1000);
+    HAL_GPIO_WritePin(CS_up_GPIO_Port, CS_up_Pin, GPIO_PIN_SET);
+  }
+#endif
+  return 0;
+}
+
+static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp,
+                             uint16_t len)
+{
+  if (handle == &hi2c1)
+  {
+    /* Read multiple command */
+    reg |= 0x80;
+    HAL_I2C_Mem_Read(handle, LIS2DH12_I2C_ADD_L, reg,
+                     I2C_MEMADD_SIZE_8BIT, bufp, len, 1000);
+  }
+#ifdef STEVAL_MKI109V3
+  else if (handle == &hspi2)
+  {
+    /* Read multiple command */
+    reg |= 0xC0;
+    HAL_GPIO_WritePin(CS_up_GPIO_Port, CS_up_Pin, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(handle, &reg, 1, 1000);
+    HAL_SPI_Receive(handle, bufp, len, 1000);
+    HAL_GPIO_WritePin(CS_up_GPIO_Port, CS_up_Pin, GPIO_PIN_SET);
+  }
+#endif
+  return 0;
+}
+
+static void tx_com(volatile uint8_t *tx_buffer, uint16_t len)
+{
+  #ifdef NUCLEO_F411RE_X_NUCLEO_IKS01A2
+  HAL_UART_Transmit(&huart2, tx_buffer, len, 1000);
+  #endif
+  #ifdef STEVAL_MKI109V3
+  CDC_Transmit_FS(tx_buffer, len);
+  #endif
+}
+
+static void platform_init(void)
+{
+#ifdef STEVAL_MKI109V3
+  TIM3->CCR1 = PWM_3V3;
+  TIM3->CCR2 = PWM_3V3;
+  HAL_Delay(1000);
+#endif
+}
+
+void Accel_Init() {
+
+	dev_ctx.write_reg = platform_write;
+	dev_ctx.read_reg = platform_read;
+	dev_ctx.handle = &hi2c1;
+
+	platform_init();
+
+	lis2dh12_device_id_get(&dev_ctx, &whoamI);
+	if (whoamI != LIS2DH12_ID)
+	{
+	  while(1)
+	  {
+	    /* manage here device not found */
+	  }
+	}
+
+	/*
+	*  Enable Block Data Update
+	*/
+	lis2dh12_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+	/*
+	* Set Output Data Rate to 1Hz
+	*/
+	lis2dh12_data_rate_set(&dev_ctx, LIS2DH12_ODR_1Hz);
+	/*
+	* Set full scale to 2g
+	*/
+	lis2dh12_full_scale_set(&dev_ctx, LIS2DH12_2g);
+
+	lis2dh12_operating_mode_set(&dev_ctx, LIS2DH12_HR_12bit);
+}
+
+void Accel_Process() {
+	lis2dh12_reg_t reg;
+
+	/*
+    * Read output only if new value available
+    */
+    lis2dh12_xl_data_ready_get(&dev_ctx, &reg.byte);
+    if(reg.byte)
+    {
+      /* Read accelerometer data */
+      memset(data_raw_acceleration.u8bit, 0x00, 3*sizeof(int16_t));
+      lis2dh12_acceleration_raw_get(&dev_ctx, data_raw_acceleration.u8bit);
+      acceleration_mg[0] =
+        lis2dh12_from_fs2_hr_to_mg(data_raw_acceleration.i16bit[0]);
+      acceleration_mg[1] =
+        lis2dh12_from_fs2_hr_to_mg(data_raw_acceleration.i16bit[1]);
+      acceleration_mg[2] =
+        lis2dh12_from_fs2_hr_to_mg(data_raw_acceleration.i16bit[2]);
+
+      sprintf((char*)tx_buffer, "Acceleration [mg]:%4.2f\t%4.2f\t%4.2f\r\n",
+              acceleration_mg[0], acceleration_mg[1], acceleration_mg[2]);
+      tx_com(tx_buffer, strlen((char const*)tx_buffer));
+
+      acceleration_mg[0] = -acceleration_mg[0]; //z
+      acceleration_mg[1] = acceleration_mg[1] - 18; //y
+      acceleration_mg[2] = -acceleration_mg[2] - 8; //x
+      for(int lc=0;lc<3;lc++) {
+    	  if(acceleration_mg[lc] >= 999) {
+    		  acceleration_mg[lc] = 999;
+    	  } else if(acceleration_mg[lc] <= -999) {
+    		  acceleration_mg[lc] = -999;
+    	  } else {
+    		  //Do nothing
+    	  }
+      }
+    }
+}
+
+

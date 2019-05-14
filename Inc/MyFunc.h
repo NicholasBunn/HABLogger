@@ -9,6 +9,7 @@
 #define MYFUNC_H_
 #include "stm32f3xx_hal.h"
 #include "bme280.h"
+#include "lis2dh12_reg.h"
 
 extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart1;
@@ -53,6 +54,13 @@ extern volatile double BME_P;
 extern volatile double BME_H;
 extern char BME_T_s[3];
 extern volatile int8_t BME_T_I;
+extern axis3bit16_t data_raw_acceleration;
+extern axis1bit16_t data_raw_temperature;
+extern float acceleration_mg[];
+extern float temperature_degC;
+extern uint8_t whoamI;
+extern uint8_t tx_buffer[];
+extern lis2dh12_ctx_t dev_ctx;
 
 void MyPrintFunc(volatile uint8_t TimeOn, volatile char GPSTime[], volatile double GPSLatF, volatile double GPSLongF, volatile float GPSAltF, volatile double CPrint, volatile double VPrint, volatile int8_t BME_T, volatile double BME_P, volatile double BME_H);
 int MyCheckSum(volatile char GPSCo[]);
@@ -67,6 +75,9 @@ int8_t user_i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint1
 void Struct_Init();
 int8_t My_BME_Config();
 void Get_BME_Data();
+
+void Accel_Init();
+void Accel_Process();
 
 #endif /* MYFUNC1_H_ */
 
